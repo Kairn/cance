@@ -1,0 +1,8 @@
+---
+# Default C configurations
+BasedOnStyle: Google
+IndentWidth: 2
+AllowShortIfStatementsOnASingleLine: false
+AllowShortLoopsOnASingleLine: false
+DerivePointerAlignment: false
+PointerAlignment: Right
