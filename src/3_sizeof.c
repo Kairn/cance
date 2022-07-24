@@ -63,18 +63,24 @@ int main(int argc, char const *argv[]) {
 
   int *int_ptr;
   int int_array[10];
+  int int_2d_array[10][10];
 
   printf("An int pointer takes <%ld> bytes of memory on your system.\n",
          sizeof int_ptr);
   printf(
       "An int array of 10 elements takes <%ld> bytes of memory on your "
-      "system.\n\n",
+      "system.\n",
       sizeof int_array);
+  printf(
+      "A 10 by 10 matrix of int elements takes <%ld> bytes of memory on your "
+      "system.\n\n",
+      sizeof int_2d_array);
 
   char *string_short = "pretty short";
   char *string_longer =
       "a much much much much much much much much much much much much much "
       "longer string :)";
+  char string_static[50] = "I need to be careful to not be too long";
 
   printf(
       "A pointer to a short string with a few characters takes <%ld> bytes of "
@@ -84,6 +90,10 @@ int main(int argc, char const *argv[]) {
       "A pointer to a longer string with more characters takes <%ld> bytes of "
       "memory on your system.\n",
       sizeof string_longer);
+  printf(
+      "A string declared as a char array of size 50 takes <%ld> bytes of "
+      "memory on your system.\n",
+      sizeof string_static);
 
   return 0;
 }

@@ -29,12 +29,15 @@ When the pre-processor sees this directive, it looks for the file in the declara
 ### Directive - \#define
 Define a key-value mapping (source code text to text). The pre-processor will substitute in the declared value wherever the defined key appears in the source code as a token (like string replacement).
 
+### Operator - sizeof
+Determine the number of bytes needed to store the value given in the operand. The operand can be an expression or a type name. This is evaluated at compile time, and it cannot be used to check memory occupancy at run time (e.g. find the actual size of an array with a pointer to the first element).
+
 ## Syntax Memo
 ### Two \#include styles
 1. Using angle brackets (e.g. `#include <foo.h>`): file should be found in standard system directories (try `gcc -xc -E -v -`).
 2. Using double quotes (e.g. `#include "foo_local.h"`): file is in the current directory (same as the `.c` file that uses the directive).
 
-### The sizeof operator
+### Usages of sizeof
 1. sizeof is NOT a function and can be used without parentheses for identifiers (e.g. `sizeof my_var`).
 2. Type names, however, must be enclosed in parentheses (e.g. `sizeof (unsigned int)`).
 
