@@ -4,7 +4,7 @@
  *
  * Concepts:
  * Read command line arguments.
- * Parse strings into numbers with basic validation.
+ * Parse strings into numbers with basic validation (conditional statements).
  * Perform basic math operations.
  * Print formatted strings.
  */

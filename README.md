@@ -31,6 +31,10 @@ When the pre-processor sees this directive, it looks for the file in the declara
 1. Using angle brackets (e.g. `#include <foo.h>`): file should be found in standard system directories (try `gcc -xc -E -v -`).
 2. Using double quotes (e.g. `#include "foo_local.h"`): file is in the current directory (same as the `.c` file that uses the directive).
 
+### The sizeof operator
+1. sizeof is NOT a function and can be used without parentheses for identifiers (e.g. `sizeof my_var`).
+2. Type names, however, must be enclosed in parentheses (e.g. `sizeof (unsigned int)`).
+
 ## TBD
 ***MORE TO BE COMPLETED***
 

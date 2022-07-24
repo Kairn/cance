@@ -16,7 +16,6 @@ EXES := $(SRCS:$(SRC_DIRS)/%.c=$(BUILD_DIR)/%)
 
 .PHONY: all
 all: $(EXES)
-	@echo $<
 
 # Build executable file in the build directory for the source C file
 $(BUILD_DIR)/%: $(SRC_DIRS)/%.c
