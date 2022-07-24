@@ -21,7 +21,7 @@ all: $(EXES)
 # Build executable file in the build directory for the source C file
 $(BUILD_DIR)/%: $(SRC_DIRS)/%.c
 	@mkdir -p $(dir $@)
-	$(CC) $(INC_FLAGS) $(CFLAGS) $< -o $@
+	$(CC) -ansi $(INC_FLAGS) $(CFLAGS) $< -o $@
 
 .PHONY: format
 format:
