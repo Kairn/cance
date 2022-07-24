@@ -26,6 +26,9 @@ Definition of a function's signature (name, return type, parameters and their ty
 ### Directive - \#include
 When the pre-processor sees this directive, it looks for the file in the declaration and replaces the directive with the file content.
 
+### Directive - \#define
+Define a key-value mapping (source code text to text). The pre-processor will substitute in the declared value wherever the defined key appears in the source code as a token (like string replacement).
+
 ## Syntax Memo
 ### Two \#include styles
 1. Using angle brackets (e.g. `#include <foo.h>`): file should be found in standard system directories (try `gcc -xc -E -v -`).

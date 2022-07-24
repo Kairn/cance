@@ -84,4 +84,6 @@ int main(int argc, char const *argv[]) {
       "A pointer to a longer string with more characters takes <%ld> bytes of "
       "memory on your system.\n",
       sizeof string_longer);
+
+  return 0;
 }

@@ -49,4 +49,6 @@ int main(int argc, char const *argv[]) {
   printf("Height of the rectangle is %.4f.\n", height);
   printf("Perimeter of the rectangle is %.4f.\n", perimeter);
   printf("Area of the rectangle is %.4f.\n", area);
+
+  return 0;
 }
