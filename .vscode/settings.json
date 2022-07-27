@@ -2,5 +2,6 @@
     "makefile.extensionOutputFolder": "./.vscode",
     "cSpell.words": [
         "Cance"
-    ]
+    ],
+    "C_Cpp.default.configurationProvider": "ms-vscode.makefile-tools"
 }
