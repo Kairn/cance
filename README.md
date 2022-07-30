@@ -41,6 +41,11 @@ Determine the number of bytes needed to store the value given in the operand. Th
 1. sizeof is NOT a function and can be used without parentheses for identifiers (e.g. `sizeof my_var`).
 2. Type names, however, must be enclosed in parentheses (e.g. `sizeof (unsigned int)`).
 
+### Pointer to arrays
+1. To declare a pointer to an array (e.g. int array), use the syntax `int (ptr*)[n]` where n is the number of elements in the array. This is not equivalent to `int **ptr` which is a pointer to an int pointer with different pointer arithmetics. Similarly, `int (ptr*)[n][m]` points to a 2D array of size n by m.
+2. `ptr[1]` is syntactically equivalent to `*(ptr + 1)` (dereferencing after doing pointer arithmetic) when ptr is a pointer to an array element (of any type).
+3. As a function argument, `void func(int arr[])` is syntactically equivalent to `void func(int *arr)`. To pass a 2D array, use the syntax `void func(int (ptr*)[n])` or `void func(int ptr[][n])`, where only the size of the first dimension can be omitted.
+
 ## TBD
 ***MORE TO BE COMPLETED***
 

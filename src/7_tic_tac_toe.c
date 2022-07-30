@@ -248,6 +248,7 @@ void erase_board() {
   input_retry_count = 0;
 }
 
+/* Erases any number of lines from the console output. */
 void erase_lines(int num_lines) {
   int i = 0;
   for (; i < num_lines; ++i) {
