@@ -9,6 +9,7 @@
  */
 
 #include <stdio.h>
+#include <string.h>
 
 /* #define macros are processed similar to text substitutions. */
 /* These do NOT have types. */
@@ -33,6 +34,8 @@ int main(int argc, char const *argv[]) {
   /* fgets loads some bytes into the buffer from stdin. */
   /* A falsy value is returned if an error occurs. */
   if (fgets(input, sizeof input, stdin)) {
+    /* This removes the trailing linefeed. */
+    input[strcspn(input, "\n")] = '\0';
     /* Parse the input string into a double. */
     if (sscanf(input, "%lf", &hours) == 1) {
       if (hours < 0) {
