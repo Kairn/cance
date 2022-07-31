@@ -5,8 +5,8 @@
  *
  * Concepts:
  * How to tokenize a string (splitting).
- * Iterate and manipulate characters in strings.
- * Use standard string library functions (check length, compare, etc.).
+ * Iterate and manipulate characters in strings (byte by byte).
+ * Use standard string library functions (strncpy, strlen, strcmp, etc.).
  */
 
 #include <ctype.h>
@@ -14,15 +14,15 @@
 #include <stdlib.h>
 #include <string.h>
 
-const int MAX_CHAR_LEN = 1000;
+const int MAX_INPUT_LEN = 1000;
 const char *WORD_DELIMITER = " ";
 
 void weird_transform(char *str);
 
 int main(int argc, char const *argv[]) {
-  char input[MAX_CHAR_LEN];
+  char input[MAX_INPUT_LEN];
   /* Take a copy as "strtok" is applied twice. */
-  char copy[MAX_CHAR_LEN];
+  char copy[MAX_INPUT_LEN];
 
   printf("Try to write an English sentence here 😊:\n");
 
@@ -31,7 +31,7 @@ int main(int argc, char const *argv[]) {
     input[strcspn(input, "\n")] = '\0';
     printf("Ok, you input has been accepted.\n");
     /* Be careful with string copy (buffer overflow risk). */
-    strncpy(copy, input, MAX_CHAR_LEN);
+    strncpy(copy, input, MAX_INPUT_LEN);
   } else {
     printf("Sorry, the program has been interrupted.\n");
     return 1;
@@ -122,6 +122,4 @@ void weird_transform(char *str) {
 
   /* Write the null byte to terminate the string. */
   str[write_pos] = 0;
-
-  return;
 }
