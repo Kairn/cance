@@ -1,6 +1,6 @@
 # -*- MakeFile -*-
 # Reference: https://makefiletutorial.com/
-# This is a study project where each source C file is independently compilable
+# This is a study project where each source C file is independently compilable.
 
 SHELL=/bin/bash
 CC := gcc
@@ -11,16 +11,16 @@ SRCS := $(shell find $(SRC_DIRS) -name '*.c')
 INC_DIRS := $(shell find $(SRC_DIRS) -type d)
 INC_FLAGS := $(addprefix -I,$(INC_DIRS))
 
-# Define an executable target for each source C file
+# Define an executable target for each source C file.
 EXES := $(SRCS:$(SRC_DIRS)/%.c=$(BUILD_DIR)/%)
 
 .PHONY: all
 all: $(EXES)
 
-# Build executable file in the build directory for the source C file
+# Build executable file in the build directory for the source C file.
 $(BUILD_DIR)/%: $(SRC_DIRS)/%.c
 	@mkdir -p $(dir $@)
-	$(CC) -ansi $(INC_FLAGS) $(CFLAGS) $< -o $@
+	$(CC) -ansi -Wall $(INC_FLAGS) $(CFLAGS) $< -o $@
 
 .PHONY: format
 format:

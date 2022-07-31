@@ -21,10 +21,10 @@ int main(int argc, char const *argv[]) {
   time_t current_time = time(NULL);
 
   /* Initialize the RNG seed. */
-  srandom((unsigned int)current_time);
+  srand((unsigned int)current_time);
 
   /* Get a random number bound between 0 and 64. */
-  int magic_number = random() % (MAX_NUMBER + 1);
+  int magic_number = rand() % (MAX_NUMBER + 1);
 
   printf("The magic number has been generated, and the game has started!\n");
   printf("You must guess the magic number between 0 and %d (inclusive).\n\n",
