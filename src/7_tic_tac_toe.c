@@ -16,6 +16,7 @@
 
 /* How many retries has a player used. This will determine how many lines to
  * clear after each move. */
+/* Global variables are generally not recommended for larger projects. */
 int input_retry_count = 0;
 
 int run_game_loop(int player_id, unsigned char *game_state);
@@ -38,7 +39,7 @@ int main(int argc, char const *argv[]) {
 
   printf("Rules:\n");
   printf(
-      "Player 1 and player 2 will take turns to place their pieces on to the "
+      "Player 1 and player 2 will take turns to place their pieces onto the "
       "board.\n");
   printf("Player 1 goes first and uses 'X', and player 2 uses 'O'.\n");
   printf("No piece can be placed on top of another piece.\n");
@@ -65,16 +66,14 @@ int main(int argc, char const *argv[]) {
           "\nWe have encountered a problem with I/O. The game must end now.\n");
       return 1;
     } else if (next_player_id < 0) {
-      printf("      🎉 🎉 🎉 🎉 🎉\n");
-      printf("      ✨ ✨ ✨ ✨ ✨\n");
+      printf("      🎉 ✨ 🎉 ✨ 🎉\n");
       draw_board(game_state);
       printf("Player %d has won, congratulations!\n", next_player_id * -1);
       break;
     } else if (next_player_id == 0) {
-      printf("      🌛 🌛 🌛 🌛 🌛\n");
-      printf("      🌜 🌜 🌜 🌜 🌜\n");
+      printf("      🌝 💀 🌝 💀 🌝\n");
       draw_board(game_state);
-      printf("The game has ended in draw.\n");
+      printf("The game has ended in a draw.\n");
       break;
     }
   }
@@ -87,10 +86,11 @@ int main(int argc, char const *argv[]) {
 /* Runs a game loop that allows the specified player to make a move and
  * evaluates the result. */
 int run_game_loop(int player_id, unsigned char *game_state) {
-  printf("Player %d's turn.\n", player_id);
   printf("===== Current board =====\n");
 
   draw_board(game_state);
+
+  printf("Player %d's turn.\n", player_id);
 
   int next_move = read_player_input(game_state);
   if (next_move == 255) {
@@ -233,8 +233,10 @@ int evaluate_board(int player_id, unsigned char *game_state) {
 /* Checks if all three points on a valid board line are occupied by the same
  * player piece. */
 int evaluate_line(int state_1, int state_2, int state_3) {
-  if (state_1 == state_2 && state_1 == state_3 && state_2 == state_3) {
-    if (state_1 != 0 || state_2 != 0 || state_3 != 0) {
+  if (state_1 == state_2 && state_2 == state_3) {
+    /* All three spots contain the same element. */
+    if (state_1 != 0) {
+      /* Spots are not empty. */
       return state_1;
     }
   }
@@ -252,6 +254,8 @@ void erase_board() {
 void erase_lines(int num_lines) {
   int i = 0;
   for (; i < num_lines; ++i) {
+    /* The following escape sequence effectively removes a line from the console
+     * output and takes the cursor back to the line above. */
     printf("\x1b[1F");
     printf("\x1b[2K");
   }
