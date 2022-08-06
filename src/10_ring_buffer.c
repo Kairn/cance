@@ -36,6 +36,11 @@ int main(int argc, char const *argv[]) {
 
   /* Initialize the queue with some memory. */
   queue_ref = calloc(INITIAL_QUEUE_SIZE, sizeof(int));
+  if (queue_ref == NULL) {
+    printf("Fatal error, memory allocation failed.\n");
+    exit(1);
+  }
+
   queue_head = queue_ref;
   queue_tail = queue_ref;
   printf("Ring buffer of size %d has been created successfully.\n",
@@ -88,10 +93,21 @@ int main(int argc, char const *argv[]) {
                get_queue_size(queue_ref, queue_head, queue_tail));
         break;
       case 4:
+        if (*queue_head == 0) {
+          printf("There is nothing at the head.\n");
+        } else {
+          printf("The head is <%d>\n", *queue_head);
+        }
         break;
       case 5:
+        if (*queue_tail == 0) {
+          printf("There is nothing at the tail.\n");
+        } else {
+          printf("The tail is <%d>\n", *queue_tail);
+        }
         break;
       case 6:
+        print_buffer_reverse(queue_ref, queue_head, queue_tail);
         break;
       case 7:
         print_buffer(queue_ref, queue_head, queue_tail);
@@ -201,6 +217,11 @@ int *enqueue(int *queue_ref, int **queue_head_ptr, int **queue_tail_ptr) {
 
   /* Allocate an expanded the array. */
   int *queue_ref_expanded = calloc(queue_capacity * 2, sizeof(int));
+  if (queue_ref_expanded == NULL) {
+    printf("Fatal error, memory allocation failed.\n");
+    free(queue_ref);
+    exit(1);
+  }
 
   /* Copy elements. */
   int i = 0;
@@ -251,6 +272,31 @@ void print_buffer(int *queue_ref, int *queue_head, int *queue_tail) {
     ++queue_tail;
     if (queue_tail - queue_ref >= queue_capacity) {
       queue_tail = queue_ref;
+    }
+  }
+
+  printf("\n");
+}
+
+void print_buffer_reverse(int *queue_ref, int *queue_head, int *queue_tail) {
+  int i = 0;
+  int size = get_queue_size(queue_ref, queue_head, queue_tail);
+
+  if (size == 0) {
+    printf("The buffer is empty.\n");
+  } else {
+    printf("Listing the buffer from head to tail (LIFO):\n");
+  }
+
+  for (; i < size; ++i) {
+    printf("%d", *queue_head);
+    if (i != size - 1) {
+      printf(", ");
+    }
+
+    --queue_head;
+    if (queue_head < queue_ref) {
+      queue_head = queue_ref + queue_capacity - 1;
     }
   }
 
