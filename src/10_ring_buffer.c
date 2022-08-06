@@ -13,16 +13,20 @@
 
 #define MAX_QUEUE_SIZE 32
 #define INITIAL_QUEUE_SIZE 4
+#define DEBUG_CODE 777
 
 /* Global variables are generally not recommended for larger projects. */
 int queue_capacity = INITIAL_QUEUE_SIZE;
 int element_id = 1;
 
 int get_user_action();
+void debug_buffer(int *queue_ref, int *queue_head, int *queue_tail);
 int *enqueue(int *queue_ref, int **queue_head_ptr, int **queue_tail_ptr);
+int dequeue(int *queue_ref, int *queue_head, int **queue_tail_ptr);
 int get_queue_size(int *queue_ref, int *queue_head, int *queue_tail);
 void print_buffer(int *queue_ref, int *queue_head, int *queue_tail);
 void print_buffer_reverse(int *queue_ref, int *queue_head, int *queue_tail);
+void clear_buffer(int *queue_ref, int **queue_head_ptr, int **queue_tail_ptr);
 
 int main(int argc, char const *argv[]) {
   /* Where is queue is allocated. */
@@ -50,6 +54,7 @@ int main(int argc, char const *argv[]) {
 
   int has_quitted = 0;
   int *temp_ref = NULL;
+  int dequeued = 0;
 
   while (!has_quitted) {
     int action = get_user_action();
@@ -62,13 +67,21 @@ int main(int argc, char const *argv[]) {
       case 1:
         temp_ref = enqueue(queue_ref, &queue_head, &queue_tail);
         if (temp_ref == NULL) {
+          /* Set back the ID since enqueue failed. */
+          --element_id;
           printf("Enqueue failed, capacity limit is reached.\n");
         } else {
-          printf("Successfully added %d to the buffer.\n", element_id - 1);
+          printf("Successfully added <%d> to the buffer.\n", element_id - 1);
           queue_ref = temp_ref;
         }
         break;
       case 2:
+        dequeued = dequeue(queue_ref, queue_head, &queue_tail);
+        if (dequeued == 0) {
+          printf("Nothing to dequeue.\n");
+        } else {
+          printf("Dequeued element <%d>.\n", dequeued);
+        }
         break;
       case 3:
         printf("The buffer has %d elements.\n",
@@ -84,10 +97,15 @@ int main(int argc, char const *argv[]) {
         print_buffer(queue_ref, queue_head, queue_tail);
         break;
       case 8:
+        clear_buffer(queue_ref, &queue_head, &queue_tail);
+        printf("The buffer has been cleared.\n");
         break;
       case 9:
         has_quitted = 1;
         printf("Bye.\n");
+        break;
+      case DEBUG_CODE:
+        debug_buffer(queue_ref, queue_head, queue_tail);
         break;
       default:
         printf("Unrecognized action, try again.\n");
@@ -116,6 +134,31 @@ int get_user_action() {
     printf("Unexpected EOF encountered.\n");
     return -1;
   }
+}
+
+/* Prints the buffer from the beginning to end (in memory order) including 0
+ * values, head and tail will be marked. */
+void debug_buffer(int *queue_ref, int *queue_head, int *queue_tail) {
+  int i = 0;
+  for (; i < queue_capacity; ++i) {
+    if (queue_ref + i == queue_head) {
+      if (queue_ref + i == queue_tail) {
+        printf("HT<%d>", *(queue_ref + i));
+      } else {
+        printf("H<%d>", *(queue_ref + i));
+      }
+    } else if (queue_ref + i == queue_tail) {
+      printf("T<%d>", *(queue_ref + i));
+    } else {
+      printf("%d", *(queue_ref + i));
+    }
+
+    if (i != queue_capacity - 1) {
+      printf(", ");
+    }
+  }
+
+  printf("\n");
 }
 
 /* Attempts to add an element to the ring buffer. If the array is full while
@@ -185,7 +228,7 @@ int get_queue_size(int *queue_ref, int *queue_head, int *queue_tail) {
   } else if (queue_head < queue_tail) {
     return queue_capacity - (queue_tail - queue_head) + 1;
   } else {
-    return (queue_head - queue_ref) + 1;
+    return (queue_head - queue_tail) + 1;
   }
 }
 
@@ -212,4 +255,37 @@ void print_buffer(int *queue_ref, int *queue_head, int *queue_tail) {
   }
 
   printf("\n");
+}
+
+void clear_buffer(int *queue_ref, int **queue_head_ptr, int **queue_tail_ptr) {
+  int i = 0;
+  /* Set all values to 0. */
+  for (; i < queue_capacity; ++i) {
+    *(queue_ref + i) = 0;
+  }
+
+  /* Reset the head and tail. */
+  *queue_head_ptr = queue_ref;
+  *queue_tail_ptr = queue_ref;
+}
+
+int dequeue(int *queue_ref, int *queue_head, int **queue_tail_ptr) {
+  if (*(*queue_tail_ptr) == 0) {
+    return 0;
+  }
+
+  int dequeued = *(*queue_tail_ptr);
+  /* Set the tail to 0. */
+  *(*queue_tail_ptr) = 0;
+  if (*queue_tail_ptr == queue_head) {
+    return dequeued;
+  }
+
+  /* Advance the tail pointer. */
+  *queue_tail_ptr += 1;
+  if (*queue_tail_ptr - queue_ref >= queue_capacity) {
+    *queue_tail_ptr = queue_ref;
+  }
+
+  return dequeued;
 }
