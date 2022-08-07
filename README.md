@@ -33,13 +33,16 @@ Define a key-value mapping (source code text to text). The pre-processor will su
 Determine the number of bytes needed to store the value given in the operand. The operand can be an expression or a type name. This is evaluated at compile time, and it cannot be used to check memory occupancy at run time (e.g. find the actual size of an array with a pointer to the first element).
 
 ### String
-C does not have an explicit "String" type like in many other languages, so operators like `+` cannot be applied to them, nor can they be equality checked using `==`. C strings are represented as an array of type "char". C strings are always terminated by a null character (`\0`, code point 0), so the actual size of the string (or char array) is always 1 byte greater than its literal length.
+C does not have an explicit "String" type like in many other languages, so operators like `+` cannot be applied to them, nor can they be equality checked using `==`. C strings are represented as an array of type "char". C strings are always terminated by a null character (`\0`, code point 0), so the actual size of the string (or char array) is always 1 byte greater than its literal length. String literals (e.g. `"my-awesome-str"`) are allocated in read-only memory and are alive for the lifetime of the program (can be returned by functions directly without a local variable).
 
 ### Pointer
 A C pointer represents a memory address (size depends on the system) that points to a single byte. The type of a pointer only affects how the memory is read by the program and how pointer arithmetic is performed. A void pointer (not the same as NULL) can point to any type, but it must be cast to an explicit type before use.
 
 ### Memory Allocation
-The compiler automatically allocates memory on the stack for static declarations such as local primitive variables, fixed size arrays, and functions, and these pieces of memory will be freed as soon as they go out of scope (their respective pointers will point to invalid memory). When memory is allocated dynamically (e.g. with `malloc`), it is created on the heap and will NOT be cleaned up until the program ends or when freed explicitly in the code. Note, when `realloc` is invoked, it takes care of freeing the old memory block pointed by the argument pointer if needed, so the programmer will only need to free the new memory region returned from the function.
+The compiler automatically allocates memory on the stack for static declarations such as local variables, fixed size arrays, and functions, and these pieces of memory will be freed as soon as they go out of scope (their respective pointers will point to invalid memory). When memory is allocated dynamically (e.g. with `malloc`), it is created on the heap and will NOT be cleaned up until the program ends or when freed explicitly in the code. Note, when `realloc` is invoked, it takes care of freeing the old memory block pointed by the argument pointer if needed, so the programmer will only need to free the new memory region returned from the function.
+
+### Keyword - struct
+In essence, a struct is an abstraction of a chunk of memory (with a certain size) and a series of offsets (how deep is each member into the memory). Similar to a C array, a pointer to a structure is also a pointer to the first member (with an offset of 0) of the structure. Due to memory alignment, the size of a structure can be larger than the sum of the sizes of its members (with padding added between members of different sizes), so memory can sometimes be saved or wasted depending on how the members are ordered in the struct definition.
 
 ## Syntax Memo
 ### Two \#include styles
@@ -63,6 +66,25 @@ The compiler automatically allocates memory on the stack for static declarations
 1. Use `const int *ptr` syntax to declare an int pointer that cannot be used to change the value that it points to (`*ptr = my_int` will be illegal). But you may change the pointer to point to a different int, and you may modify the int value directly (if the int is not const).
 2. Use `int *const ptr` syntax to declare a pointer that will always point to the same address. But the value stored on the address may be changed.
 3. `const int *const ptr` is the way to declare a constant pointer whose pointed value also cannot be changed via this pointer.
+
+### Usages of struct
+1. Use `struct my_struct_ab {int a; int b;}` to create a structure definition only.
+2. Use `struct my_struct {...} my_struct_var` to create a definition and a variable instance at the same time.
+3. Use `struct {...} my_var` to declare an unnamed structure (no definition) variable called "my_var".
+4. Define a nested struct using `struct outer_struct {struct inner_struct {...} inner_member;}`, but the "inner_struct" in not visible outside the "outer_struct" definition.
+
+### Initialization of struct
+Assume we have a structure definition `struct my_struct {int a; int b;}`.
+1. Use `struct my_struct my_var = {1, 2}` to initialize its members in how they are ordered in the definition. Not all members need to be initialized.
+2. Use `struct my_struct my_var = {.a = 1, .b = 2}` to initialize members referencing their names.
+
+### Access of struct
+1. To access a struct member from a non-pointer struct variable, use the syntax `my_struct.member_a`.
+2. If given a struct pointer, its member can be accessed using `my_struct_ptr->member_a` which is equivalent to `(*my_struct_ptr).member_a`. Note, this syntax grabs the member itself, not a pointer to the member.
+
+### Usages of typedef
+1. Use `typedef int my_int_alias` to create an alias to an existing/known type.
+2. Use `typedef struct my_struct {...} my_struct_type` to create a type name for a struct. The `struct` keyword can be omitted when declaring a variable of "my_struct_type". Note, the struct may be unnamed. The struct itself can either be defined in-place (with `{...}`) or already existing (without `{...}`).
 
 ## Play with Modules
 This project has ? modules. Each module is a different program that is meant to demonstrate different concepts in C. They can be compiled and run separately with no internal dependencies.
