@@ -98,3 +98,4 @@ dkms.conf
 
 ### Custom ###
 build/**
+*.temp
