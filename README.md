@@ -1,5 +1,7 @@
 # Cance
 
+This project aims to be a solid reference for learning the fundamentals of the C programming language. The primary audience are experienced developers who program in other languages. I strongly believe understanding C will help anyone become a more effective developer. This documentation and associated program modules are meant to be informational and not opinionated. Advanced C topics are mostly not covered, but they can be pursued with relative ease once the basics are firmly understood, especially for seasoned programmers.
+
 ## C Things Explained
 ### Complier
 The C compiler (GCC, Clang, etc.) helps "transform" C source code into machine executable(s). This transformation includes 4 granular stages.
@@ -14,7 +16,7 @@ The C compiler (GCC, Clang, etc.) helps "transform" C source code into machine e
 Specifications for the C programming language. Similar to Java SE (8, 11, 17, etc.) editions for the Java language. Important ones include:
 1. ANSI C (C89): The first and most stable version of C, ratified in 1989.
 2. C99: Published in 1999 with many new (and a few broken ones too) features introduced. Use it at your own risk.
-3. C11: Ratified in 2011. "Fixed" broken C99 features but still considered relatively "new" with its own risks.
+3. C11: Ratified in 2011. "Fixed" broken C99 features but still considered relatively "new". Some of the new features may not have been implemented at the time of this writing.
 4. C17: The most current standard (as of 2022). No new features.
 
 ### Header File
@@ -27,7 +29,7 @@ Definition of a function's signature (name, return type, parameters and their ty
 When the pre-processor sees this directive, it looks for the file in the declaration and replaces the directive with the file content.
 
 ### Directive - \#define
-Define a key-value mapping (source code text to text). The pre-processor will substitute in the declared value wherever the defined key appears in the source code as a token (like string replacement).
+Define a key-value mapping (source code text to text). The pre-processor will substitute in the declared value wherever the defined key appears in the source code as a token, similar to a string replacement.
 
 ### Operator - sizeof
 Determine the number of bytes needed to store the value given in the operand. The operand can be an expression or a type name. This is evaluated at compile time, and it cannot be used to check memory occupancy at run time (e.g. find the actual size of an array with a pointer to the first element).
@@ -46,8 +48,8 @@ In essence, a struct is an abstraction of a chunk of memory (with a certain size
 
 ## Syntax Memo
 ### Two \#include styles
-1. Using angle brackets (e.g. `#include <foo.h>`): file should be found in standard system directories (try `gcc -xc -E -v -`).
-2. Using double quotes (e.g. `#include "foo_local.h"`): file is in the current directory (same as the `.c` file that uses the directive).
+1. Using angle brackets (e.g. `#include <foo.h>`) to indicate the file should be found in standard system directories (try `gcc -xc -E -v -`).
+2. Using double quotes (e.g. `#include "foo_local.h"`) to indicate the file is in the current directory (same as the `.c` file that uses the directive).
 
 ### Usages of sizeof
 1. sizeof is NOT a function and can be used without parentheses for identifiers (e.g. `sizeof my_var`).
@@ -87,7 +89,7 @@ Assume we have a structure definition `struct my_struct {int a; int b;}`.
 2. Use `typedef struct my_struct {...} my_struct_type` to create a type name for a struct. The `struct` keyword can be omitted when declaring a variable of "my_struct_type". Note, the struct may be unnamed. The struct itself can either be defined in-place (with `{...}`) or already existing (without `{...}`).
 
 ## Play with Modules
-This project has ? modules. Each module is a different program that is meant to demonstrate different concepts in C. They can be compiled and run separately with no internal dependencies.
+This project has 11 modules. Each module is a different program that is meant to demonstrate different concepts in C. They can be compiled and run separately with no internal dependencies. Everything is written in the C89 standard (no fancy compiler needed). A Unix-like operating environment is required, however. Make sure standard tools like "gcc" and "make" are installed.
 
 ### Source code format
 `make format`
