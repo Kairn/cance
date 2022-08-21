@@ -10,7 +10,7 @@ The C compiler (GCC, Clang, etc.) helps "transform" C source code into machine e
 * Pre-process: Process directives (lines starting with a `#`), strip comments, cleanup syntax so that the source code is easier to ingest.
 * Compile: Transform C code into Assembly instructions targeting a specific CPU architecture. The output is human-readable but cannot be brought to different platforms.
 * Assemble: Transform compiled Assembly code into object code targeting the underlying processor. The output contains machine instructions but CANNOT be run.
-* Link: Fetch referenced library functions and rearrange the machine code as needed to produce an executable.
+* Link: Fetch referenced library functions and rearrange the machine code as needed to produce an executable. Note, all object code in a C program share the same global namespace, and therefore, if the same function name is defined in multiple sources, information must be supplied to the linker on how to resolve the conflict.
 
 ### C Standards
 Specifications for the C programming language. Similar to Java SE (8, 11, 17, etc.) editions for the Java language. Important ones include:
@@ -23,7 +23,7 @@ Specifications for the C programming language. Similar to Java SE (8, 11, 17, et
 Typically contain function prototypes, constants, and other declarations that can be safely repeated without harmful consequences (no runtime logic) in each translation unit (regular `.c` file) fed to the compiler. Intended to be included in source `.c` files and should NOT be compiled independently.
 
 ### Function Prototype
-Definition of a function's signature (name, return type, parameters and their types) without implementation. Look like an abstract method in Java. The existence of a function prototype is enough for subsequent code to use it, and this code can be compiled independently without knowing the implementation. But the linker must know where to find the implementation in order to make the final program.
+Declaration of a function's signature (name, return type, parameters and their types) without implementation. Look like an abstract method in Java (the difference being parameter names are optional in C). The existence of a function prototype is enough for subsequent code to use it, and this code can be compiled independently without knowing the implementation. But the linker must know where to find the implementation in order to make the final program.
 
 ### Directive - \#include
 When the pre-processor sees this directive, it looks for the file in the declaration and replaces the directive with the file content.
@@ -59,6 +59,13 @@ In essence, a struct is an abstraction of a chunk of memory (with a certain size
 1. To declare a pointer to an array (e.g. int array), use the syntax `int (ptr*)[n]` where n is the number of elements in the array. This is not equivalent to `int **ptr` which is a pointer to an int pointer with different pointer arithmetics. Similarly, `int (ptr*)[n][m]` points to a 2D array of size n by m.
 2. `ptr[1]` is syntactically equivalent to `*(ptr + 1)` (dereferencing after doing pointer arithmetic) when ptr is a pointer to an array element (of any type).
 3. As a function argument, `void func(int arr[])` is syntactically equivalent to `void func(int *arr)`. To pass a 2D array, use the syntax `void func(int (ptr*)[n])` or `void func(int ptr[][n])`, where only the size of the first dimension can be omitted.
+
+### Pointer to functions
+1. Use `int (*fn_ptr)()` syntax to decare a pointer to a function returning an int.
+2. Function pointers can be assigned function names like `int fn() {...}; int (*fn_ptr)() = fn`.
+3. To invoke a function, add the invocation operator (`()`) after a function pointer or a function name. `fn()` is equivalent to `fn_ptr()` given the above statement.
+4. A function name cannot be assigned to (unlike a function pointer), similar to an array name. `fn = fn_ptr` is illegal.
+5. Referencing a function name returns the same pointer, meaning `fn_ptr = fn` is equivalent to `fn_ptr = &fn`. Similarly, dereferencing a function pointer also returns the same pointer, meaning `fn_ptr()` is equivalent to `(*fn_ptr)()`.
 
 ### String Declaration and Initialization
 1. Either `char my_str[] = "foo"` or `char *my_str = "foo"` is a valid way to declare and initialize a C string.
