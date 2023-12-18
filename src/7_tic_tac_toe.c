@@ -243,7 +243,7 @@ int evaluate_line(int state_1, int state_2, int state_3) {
   return 0;
 }
 
-/* Erase the text output that will be rerendered. */
+/* Erases the text output that will be rerendered. */
 void erase_board() {
   int lines_to_remove = (input_retry_count + 1) * 2 + 17;
   erase_lines(lines_to_remove);

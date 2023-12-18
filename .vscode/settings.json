@@ -1,5 +1,11 @@
 {
     "cSpell.words": [
         "Cance"
-    ]
+    ],
+    "files.associations": {
+        "stdlib.h": "c",
+        "time.h": "c",
+        "stdio.h": "c",
+        "unistd.h": "c"
+    }
 }
