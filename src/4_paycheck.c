@@ -58,8 +58,7 @@ int main(int argc, char const *argv[]) {
   double gross_pay;
   if (hours > OVERTIME_THRESHOLD) {
     overtime_hours = hours - OVERTIME_THRESHOLD;
-    gross_pay =
-        OVERTIME_THRESHOLD * BASE_PAY_RATE + overtime_hours * overtime_pay_rate;
+    gross_pay = OVERTIME_THRESHOLD * BASE_PAY_RATE + overtime_hours * overtime_pay_rate;
   } else {
     overtime_hours = 0;
     gross_pay = hours * BASE_PAY_RATE;
@@ -79,9 +78,7 @@ int main(int argc, char const *argv[]) {
     /* Deduct in all three brackets. */
     total_tax = TAX_BRACKET_1_THRESHOLD * TAX_BRACKET_1_RATE;
     total_tax += TAX_BRACKET_2_THRESHOLD * TAX_BRACKET_2_RATE;
-    total_tax +=
-        (gross_pay - TAX_BRACKET_1_THRESHOLD - TAX_BRACKET_2_THRESHOLD) *
-        TAX_BRACKET_REMAINING_RATE;
+    total_tax += (gross_pay - TAX_BRACKET_1_THRESHOLD - TAX_BRACKET_2_THRESHOLD) * TAX_BRACKET_REMAINING_RATE;
   }
 
   printf("=== Weekly paycheck summary ===\n");

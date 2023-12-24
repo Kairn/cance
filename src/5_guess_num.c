@@ -27,8 +27,7 @@ int main(int argc, char const *argv[]) {
   int magic_number = rand() % (MAX_NUMBER + 1);
 
   printf("The magic number has been generated, and the game has started!\n");
-  printf("You must guess the magic number between 0 and %d (inclusive).\n\n",
-         MAX_NUMBER);
+  printf("You must guess the magic number between 0 and %d (inclusive).\n\n", MAX_NUMBER);
 
   /* For loop counter. */
   /* Must be declared outside of the loop construct in C89. */
@@ -50,16 +49,14 @@ int main(int argc, char const *argv[]) {
             guessed = input_num;
             break;
           } else {
-            printf(
-                "You guessed a number outside the allowed range. Try again.\n");
+            printf("You guessed a number outside the allowed range. Try again.\n");
             continue;
           }
         }
       } else {
         /* The program may enter an infinite loop if EOF is reached without this
          * condition. */
-        printf(
-            "We have encountered a problem with I/O. The game must end now.\n");
+        printf("We have encountered a problem with I/O. The game must end now.\n");
         return 1;
       }
 

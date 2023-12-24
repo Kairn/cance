@@ -28,34 +28,28 @@ int main(int argc, char const *argv[]) {
 
   printf("=== End of system info ===\n\n");
 
-  printf("A <char> data type takes <%ld> bytes of memory on your system.\n",
-         sizeof(char));
+  printf("A <char> data type takes <%ld> bytes of memory on your system.\n", sizeof(char));
   printf(
       "An <unsigned char> data type takes <%ld> bytes of memory on your "
       "system.\n",
       sizeof(unsigned char));
-  printf("A <short> data type takes <%ld> bytes of memory on your system.\n",
-         sizeof(short));
+  printf("A <short> data type takes <%ld> bytes of memory on your system.\n", sizeof(short));
   printf(
       "An <unsigned short> data type takes <%ld> bytes of memory on your "
       "system.\n",
       sizeof(unsigned short));
-  printf("An <int> data type takes <%ld> bytes of memory on your system.\n",
-         sizeof(int));
+  printf("An <int> data type takes <%ld> bytes of memory on your system.\n", sizeof(int));
   printf(
       "An <unsigned int> data type takes <%ld> bytes of memory on your "
       "system.\n",
       sizeof(unsigned int));
-  printf("A <long> data type takes <%ld> bytes of memory on your system.\n",
-         sizeof(long));
+  printf("A <long> data type takes <%ld> bytes of memory on your system.\n", sizeof(long));
   printf(
       "An <unsigned long> data type takes <%ld> bytes of memory on your "
       "system.\n",
       sizeof(unsigned long));
-  printf("A <float> data type takes <%ld> bytes of memory on your system.\n",
-         sizeof(float));
-  printf("A <double> data type takes <%ld> bytes of memory on your system.\n",
-         sizeof(double));
+  printf("A <float> data type takes <%ld> bytes of memory on your system.\n", sizeof(float));
+  printf("A <double> data type takes <%ld> bytes of memory on your system.\n", sizeof(double));
   printf(
       "A <long double> data type takes <%ld> bytes of memory on your "
       "system.\n\n",
@@ -65,8 +59,7 @@ int main(int argc, char const *argv[]) {
   int int_array[10];
   int int_2d_array[10][10];
 
-  printf("An int pointer takes <%ld> bytes of memory on your system.\n",
-         sizeof int_ptr);
+  printf("An int pointer takes <%ld> bytes of memory on your system.\n", sizeof int_ptr);
   printf(
       "An int array of 10 elements takes <%ld> bytes of memory on your "
       "system.\n",

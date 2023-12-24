@@ -62,8 +62,7 @@ int main(int argc, char const *argv[]) {
 
     /* Game has ended. */
     if (next_player_id == 255) {
-      printf(
-          "\nWe have encountered a problem with I/O. The game must end now.\n");
+      printf("\nWe have encountered a problem with I/O. The game must end now.\n");
       return 1;
     } else if (next_player_id < 0) {
       printf("      🎉 ✨ 🎉 ✨ 🎉\n");
@@ -125,11 +124,9 @@ void draw_board(unsigned char *game_state) {
       "   |     |     |     |\n"
       "   ------ ----- ------\n\n";
 
-  printf(board_str, state_to_str(game_state[0]), state_to_str(game_state[1]),
-         state_to_str(game_state[2]), state_to_str(game_state[3]),
-         state_to_str(game_state[4]), state_to_str(game_state[5]),
-         state_to_str(game_state[6]), state_to_str(game_state[7]),
-         state_to_str(game_state[8]));
+  printf(board_str, state_to_str(game_state[0]), state_to_str(game_state[1]), state_to_str(game_state[2]),
+         state_to_str(game_state[3]), state_to_str(game_state[4]), state_to_str(game_state[5]),
+         state_to_str(game_state[6]), state_to_str(game_state[7]), state_to_str(game_state[8]));
 }
 
 /* Converts a state indicator to the string to be displayed. */
@@ -188,32 +185,16 @@ int evaluate_board(int player_id, unsigned char *game_state) {
   /* Check all 8 lines for a possible winner. */
   int winner_id = 0;
   /* All 3 rows. */
-  winner_id = winner_id != 0
-                  ? winner_id
-                  : evaluate_line(game_state[0], game_state[1], game_state[2]);
-  winner_id = winner_id != 0
-                  ? winner_id
-                  : evaluate_line(game_state[3], game_state[4], game_state[5]);
-  winner_id = winner_id != 0
-                  ? winner_id
-                  : evaluate_line(game_state[6], game_state[7], game_state[8]);
+  winner_id = winner_id != 0 ? winner_id : evaluate_line(game_state[0], game_state[1], game_state[2]);
+  winner_id = winner_id != 0 ? winner_id : evaluate_line(game_state[3], game_state[4], game_state[5]);
+  winner_id = winner_id != 0 ? winner_id : evaluate_line(game_state[6], game_state[7], game_state[8]);
   /* All 3 columns. */
-  winner_id = winner_id != 0
-                  ? winner_id
-                  : evaluate_line(game_state[0], game_state[3], game_state[6]);
-  winner_id = winner_id != 0
-                  ? winner_id
-                  : evaluate_line(game_state[1], game_state[4], game_state[7]);
-  winner_id = winner_id != 0
-                  ? winner_id
-                  : evaluate_line(game_state[2], game_state[5], game_state[8]);
+  winner_id = winner_id != 0 ? winner_id : evaluate_line(game_state[0], game_state[3], game_state[6]);
+  winner_id = winner_id != 0 ? winner_id : evaluate_line(game_state[1], game_state[4], game_state[7]);
+  winner_id = winner_id != 0 ? winner_id : evaluate_line(game_state[2], game_state[5], game_state[8]);
   /* 2 diagonal lines. */
-  winner_id = winner_id != 0
-                  ? winner_id
-                  : evaluate_line(game_state[0], game_state[4], game_state[8]);
-  winner_id = winner_id != 0
-                  ? winner_id
-                  : evaluate_line(game_state[2], game_state[4], game_state[6]);
+  winner_id = winner_id != 0 ? winner_id : evaluate_line(game_state[0], game_state[4], game_state[8]);
+  winner_id = winner_id != 0 ? winner_id : evaluate_line(game_state[2], game_state[4], game_state[6]);
 
   if (winner_id != 0) {
     return winner_id * -1;

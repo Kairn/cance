@@ -43,8 +43,7 @@ int main(int argc, char const *argv[]) {
 
   queue_head = queue_ref;
   queue_tail = queue_ref;
-  printf("Ring buffer of size %d has been created successfully.\n",
-         INITIAL_QUEUE_SIZE);
+  printf("Ring buffer of size %d has been created successfully.\n", INITIAL_QUEUE_SIZE);
 
   printf("\nActions you can perform:\n");
   printf("1: Enqueue an element.\n");
@@ -89,8 +88,7 @@ int main(int argc, char const *argv[]) {
         }
         break;
       case 3:
-        printf("The buffer has %d elements.\n",
-               get_queue_size(queue_ref, queue_head, queue_tail));
+        printf("The buffer has %d elements.\n", get_queue_size(queue_ref, queue_head, queue_tail));
         break;
       case 4:
         if (*queue_head == 0) {

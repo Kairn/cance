@@ -23,8 +23,7 @@ const char OUTPUT_FILE_PATH[] = "./md_tst/README.md";
 const char TEMP_OUTPUT_PATH[] = "./md_tst/stand_output.md.temp";
 
 struct JoJoStand {
-  char name[MAX_STAND_NAME_LEN +
-            1]; /* One extra byte for the null terminator. */
+  char name[MAX_STAND_NAME_LEN + 1]; /* One extra byte for the null terminator. */
   int power;
   int speed;
   int range;
@@ -164,18 +163,12 @@ int main(int argc, char const *argv[]) {
 
   /* Print aggregate statistics. */
   printf("=== Aggregate Statistics ===\n");
-  printf("Average power: %.2f\n",
-         (double)stand_aggregate_stats.total_power / stands_count);
-  printf("Average speed: %.2f\n",
-         (double)stand_aggregate_stats.total_speed / stands_count);
-  printf("Average range: %.2f\n",
-         (double)stand_aggregate_stats.total_range / stands_count);
-  printf("Average persistence: %.2f\n",
-         (double)stand_aggregate_stats.total_persistence / stands_count);
-  printf("Average precision: %.2f\n",
-         (double)stand_aggregate_stats.total_precision / stands_count);
-  printf("Average potential: %.2f\n",
-         (double)stand_aggregate_stats.total_potential / stands_count);
+  printf("Average power: %.2f\n", (double)stand_aggregate_stats.total_power / stands_count);
+  printf("Average speed: %.2f\n", (double)stand_aggregate_stats.total_speed / stands_count);
+  printf("Average range: %.2f\n", (double)stand_aggregate_stats.total_range / stands_count);
+  printf("Average persistence: %.2f\n", (double)stand_aggregate_stats.total_persistence / stands_count);
+  printf("Average precision: %.2f\n", (double)stand_aggregate_stats.total_precision / stands_count);
+  printf("Average potential: %.2f\n", (double)stand_aggregate_stats.total_potential / stands_count);
   printf("Number of E or below: %d\n", stand_aggregate_stats.count_e_or_below);
   printf("Number of D: %d\n", stand_aggregate_stats.count_d);
   printf("Number of C: %d\n", stand_aggregate_stats.count_c);
@@ -237,12 +230,9 @@ void parse_line_to_stand(struct JoJoStand *stand, char *line) {
   stand->power = read_stat_text_to_int_and_count(strtok(NULL, CSV_DELIMITER));
   stand->speed = read_stat_text_to_int_and_count(strtok(NULL, CSV_DELIMITER));
   stand->range = read_stat_text_to_int_and_count(strtok(NULL, CSV_DELIMITER));
-  stand->persistence =
-      read_stat_text_to_int_and_count(strtok(NULL, CSV_DELIMITER));
-  stand->precision =
-      read_stat_text_to_int_and_count(strtok(NULL, CSV_DELIMITER));
-  stand->potential =
-      read_stat_text_to_int_and_count(strtok(NULL, CSV_DELIMITER));
+  stand->persistence = read_stat_text_to_int_and_count(strtok(NULL, CSV_DELIMITER));
+  stand->precision = read_stat_text_to_int_and_count(strtok(NULL, CSV_DELIMITER));
+  stand->potential = read_stat_text_to_int_and_count(strtok(NULL, CSV_DELIMITER));
 }
 
 void write_stat_to_table(int stat, FILE *output_handle) {
@@ -280,6 +270,5 @@ void process_stand(struct JoJoStand *stand, FILE *output_handle) {
   write_stat_to_table(stand->potential, output_handle);
 
   fprintf(output_handle, " %d |\n",
-          stand->power + stand->speed + stand->range + stand->persistence +
-              stand->precision + stand->potential);
+          stand->power + stand->speed + stand->range + stand->persistence + stand->precision + stand->potential);
 }

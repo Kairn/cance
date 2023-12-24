@@ -6,3 +6,4 @@ AllowShortIfStatementsOnASingleLine: false
 AllowShortLoopsOnASingleLine: false
 DerivePointerAlignment: false
 PointerAlignment: Right
+ColumnLimit: 120
