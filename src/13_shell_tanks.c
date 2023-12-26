@@ -16,7 +16,7 @@
 char *SCREEN[SCREEN_H];
 static int rendered = 0;
 
-#define FPS 10
+#define FPS 20
 
 enum GameState {
   INIT,
@@ -31,6 +31,7 @@ static struct termios saved_term;
 
 #define IN_BUF_LEN 256
 char IN_BUF[IN_BUF_LEN];
+char VOID_BUF[IN_BUF_LEN];
 
 #define BORDER_SIZE 3
 #define HF_LEN SCREEN_W *BORDER_SIZE
@@ -77,14 +78,17 @@ const char *const G_FRAME_INS[] = {"╠╣                          MOVE: WASD, 
 #define ENEMY_SIZE 10
 #define ENEMY_W 6
 #define ENEMY_H 3
+#define ENEMY_CD 1
+#define ENEMY_STB 10
 const char *const ENEMY_FRAME[] = {" ,--. ", "| oo |", "|/\\/\\|"};
 
 enum Direction {
   STATIONARY,
-  UP,
   DOWN,
+  UP,
   LEFT,
   RIGHT,
+  NO_DIR,
 };
 
 enum ObjectType {
@@ -99,6 +103,7 @@ struct Enemy {
   int col;
   int life;
   enum Direction dir;
+  int cd;
 };
 
 /* Sets the terminal to non-canonical mode to read keyboard inputs. */
@@ -114,7 +119,11 @@ void set_non_canonical_mode() {
 }
 
 /* Pauses the program between frames. */
-void frame_pause() { usleep(1000000 / FPS); }
+void frame_pause() {
+  /* Clear input buffer. */
+  read(STDIN_FILENO, VOID_BUF, IN_BUF_LEN - 1);
+  usleep(1000000 / FPS);
+}
 
 /* Reads an input from the player; the last valid input will be used. */
 char get_input_char() {
@@ -210,11 +219,13 @@ void run_title_screen(const char *const text[]) {
 enum Direction get_rand_dir(enum Direction cur_dir) {
   enum Direction dir = cur_dir;
   while (dir == cur_dir) {
+    /* Any valid direction. */
     dir = rand() % 5;
   }
   return dir;
 }
 
+/* Draws the game object by filling the memory with appropriate data. */
 void draw_object(void *obj) {
   enum ObjectType ot = *(enum ObjectType *)obj;
   if (ot == ENEMY) {
@@ -231,6 +242,92 @@ void draw_object(void *obj) {
   }
 }
 
+/* Performs an action on an active enemy. */
+void enemy_act(struct Enemy *enemy) {
+  if (enemy->life <= 0) {
+    return;
+  } else if (enemy->cd > 0) {
+    --enemy->cd;
+    return;
+  }
+  enemy->cd = ENEMY_CD;
+
+  if (enemy->dir == STATIONARY) {
+    enemy->dir = get_rand_dir(NO_DIR);
+    return;
+  }
+
+  int collision = 0;
+  if (enemy->dir == UP) {
+    int c = enemy->col;
+    for (; c < enemy->col + ENEMY_W; ++c) {
+      if (SCREEN[enemy->row - 1][c] != ' ') {
+        collision = 1;
+        break;
+      }
+    }
+    if (!collision) {
+      /* Fill the space with dummy values so no other objects will collide into it. */
+      c = enemy->col;
+      for (; c < enemy->col + ENEMY_W; ++c) {
+        SCREEN[enemy->row - 1][c] = 'E';
+      }
+      /* Move up. */
+      --enemy->row;
+    }
+  } else if (enemy->dir == DOWN) {
+    int c = enemy->col;
+    for (; c < enemy->col + ENEMY_W; ++c) {
+      if (SCREEN[enemy->row + ENEMY_H][c] != ' ') {
+        collision = 1;
+        break;
+      }
+    }
+    if (!collision) {
+      c = enemy->col;
+      for (; c < enemy->col + ENEMY_W; ++c) {
+        SCREEN[enemy->row + ENEMY_H][c] = 'E';
+      }
+      ++enemy->row;
+    }
+  } else if (enemy->dir == LEFT) {
+    int r = enemy->row;
+    for (; r < enemy->row + ENEMY_H; ++r) {
+      if (SCREEN[r][enemy->col - 1] != ' ') {
+        collision = 1;
+        break;
+      }
+    }
+    if (!collision) {
+      r = enemy->row;
+      for (; r < enemy->row + ENEMY_H; ++r) {
+        SCREEN[r][enemy->col - 1] = 'E';
+      }
+      --enemy->col;
+    }
+  } else if (enemy->dir == RIGHT) {
+    int r = enemy->row;
+    for (; r < enemy->row + ENEMY_H; ++r) {
+      if (SCREEN[r][enemy->col + ENEMY_W] != ' ') {
+        collision = 1;
+        break;
+      }
+    }
+    if (!collision) {
+      r = enemy->row;
+      for (; r < enemy->row + ENEMY_H; ++r) {
+        SCREEN[r][enemy->col + ENEMY_W] = 'E';
+      }
+      ++enemy->col;
+    }
+  }
+
+  if (collision || (rand() % ENEMY_STB) == 0) {
+    enemy->dir = get_rand_dir(enemy->dir);
+  }
+}
+
+/* Runs the main game routine. */
 void run_game() {
   struct Enemy enemies[ENEMY_SIZE];
   int i = 0;
@@ -238,6 +335,7 @@ void run_game() {
     enemies[i].ot = ENEMY;
     enemies[i].dir = STATIONARY;
     enemies[i].life = 2;
+    enemies[i].cd = ENEMY_CD;
     enemies[i].col = SCREEN_LEFT + i * (ENEMY_W + 1);
     enemies[i].row = SCREEN_TOP + rand() % 10;
   }
@@ -252,6 +350,9 @@ void run_game() {
     }
 
     /* Logic to process objects. */
+    for (i = 0; i < ENEMY_SIZE; ++i) {
+      enemy_act(&enemies[i]);
+    }
 
     /* Draw all objects. */
     screen_fill_def();
@@ -265,6 +366,8 @@ void run_game() {
 }
 
 int main(int argc, char const *argv[]) {
+  /* Test code ONLY. */
+
   /* Save the terminal state. */
   tcgetattr(STDIN_FILENO, &saved_term);
   set_non_canonical_mode();
