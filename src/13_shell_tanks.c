@@ -47,6 +47,7 @@ const char G_FRAME_F1[] = "╠╬╦╦╦╦╦╦╦╦╦╦╦╦╦╦╦�
 const char G_FRAME_F2[] = "╚╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╩╝";
 
 #define TITLE_START 8
+#define TITLE_TICK 8
 const char *const G_FRAME_TITLE[] = {
     "╠╣               _____ __         ____ ______            __                   ╠╣",
     "╠╣              / ___// /_  ___  / / //_  __/___ _____  / /_______            ╠╣",
@@ -104,6 +105,22 @@ struct Enemy {
   int life;
   enum Direction dir;
   int cd;
+};
+
+#define TANK_W 5
+#define TANK_H 3
+#define TANK_CHAR 126
+const char *const TANK_FRAME_U[] = {"  @  ", "+|-|+", "+   +"};
+const char *const TANK_FRAME_D[] = {"+   +", "+|-|+", "  @  "};
+const char *const TANK_FRAME_L[] = {"  + +", "@|-| ", "  + +"};
+const char *const TANK_FRAME_R[] = {"+ +  ", " |-|@", "+ +  "};
+
+struct Tank {
+  enum ObjectType ot;
+  int row;
+  int col;
+  enum Direction dir;
+  int move;
 };
 
 /* Sets the terminal to non-canonical mode to read keyboard inputs. */
@@ -188,7 +205,7 @@ void run_title_screen(const char *const text[]) {
   int show_e = 1;
   while (1) {
     ++tick;
-    if (tick % 5 == 0) {
+    if (tick % TITLE_TICK == 0) {
       show_e = !show_e;
       if (show_e) {
         memcpy(SCREEN[E_LINE], G_FRAME_INS[2], BD_LEN);
@@ -236,7 +253,33 @@ void draw_object(void *obj) {
       memcpy(SCREEN[row + di] + col, ENEMY_FRAME[di], ENEMY_W);
     }
   } else if (ot == TANK) {
-    /* TODO. */
+    int row = ((struct Tank *)obj)->row;
+    int col = ((struct Tank *)obj)->col;
+    int di = 0;
+    switch (((struct Tank *)obj)->dir) {
+      case UP:
+        for (; di < TANK_H; ++di) {
+          memcpy(SCREEN[row + di] + col, TANK_FRAME_U[di], TANK_W);
+        }
+        break;
+      case DOWN:
+        for (; di < TANK_H; ++di) {
+          memcpy(SCREEN[row + di] + col, TANK_FRAME_D[di], TANK_W);
+        }
+        break;
+      case LEFT:
+        for (; di < TANK_H; ++di) {
+          memcpy(SCREEN[row + di] + col, TANK_FRAME_L[di], TANK_W);
+        }
+        break;
+      case RIGHT:
+        for (; di < TANK_H; ++di) {
+          memcpy(SCREEN[row + di] + col, TANK_FRAME_R[di], TANK_W);
+        }
+        break;
+      default:
+        break;
+    }
   } else if (ot == BULLET) {
     /* TODO. */
   }
@@ -258,10 +301,15 @@ void enemy_act(struct Enemy *enemy) {
   }
 
   int collision = 0;
+  int destroy = 0;
   if (enemy->dir == UP) {
     int c = enemy->col;
     for (; c < enemy->col + ENEMY_W; ++c) {
-      if (SCREEN[enemy->row - 1][c] != ' ') {
+      char obj = SCREEN[enemy->row - 1][c];
+      if (obj == TANK_CHAR) {
+        /* Destroy the tank. */
+        destroy = 1;
+      } else if (obj != ' ') {
         collision = 1;
         break;
       }
@@ -278,7 +326,10 @@ void enemy_act(struct Enemy *enemy) {
   } else if (enemy->dir == DOWN) {
     int c = enemy->col;
     for (; c < enemy->col + ENEMY_W; ++c) {
-      if (SCREEN[enemy->row + ENEMY_H][c] != ' ') {
+      char obj = SCREEN[enemy->row + ENEMY_H][c];
+      if (obj == TANK_CHAR) {
+        destroy = 1;
+      } else if (obj != ' ') {
         collision = 1;
         break;
       }
@@ -293,7 +344,10 @@ void enemy_act(struct Enemy *enemy) {
   } else if (enemy->dir == LEFT) {
     int r = enemy->row;
     for (; r < enemy->row + ENEMY_H; ++r) {
-      if (SCREEN[r][enemy->col - 1] != ' ') {
+      char obj = SCREEN[r][enemy->col - 1];
+      if (obj == TANK_CHAR) {
+        destroy = 1;
+      } else if (obj != ' ') {
         collision = 1;
         break;
       }
@@ -308,7 +362,10 @@ void enemy_act(struct Enemy *enemy) {
   } else if (enemy->dir == RIGHT) {
     int r = enemy->row;
     for (; r < enemy->row + ENEMY_H; ++r) {
-      if (SCREEN[r][enemy->col + ENEMY_W] != ' ') {
+      char obj = SCREEN[r][enemy->col + ENEMY_W];
+      if (obj == TANK_CHAR) {
+        destroy = 1;
+      } else if (obj != ' ') {
         collision = 1;
         break;
       }
@@ -322,13 +379,90 @@ void enemy_act(struct Enemy *enemy) {
     }
   }
 
+  if (!collision && destroy) {
+    G_STATE = LOST;
+    return;
+  }
+
   if (collision || (rand() % ENEMY_STB) == 0) {
     enemy->dir = get_rand_dir(enemy->dir);
   }
 }
 
+/* Moves the tank based on instruction. */
+void tank_move(struct Tank *tank) {
+  if (!tank->move) {
+    return;
+  }
+  tank->move = 0;
+
+  if (tank->dir == UP) {
+    /* Check boundary. */
+    if (tank->row == SCREEN_TOP) {
+      return;
+    }
+    int c = tank->col;
+    for (; c < tank->col + TANK_W; ++c) {
+      if (SCREEN[tank->row - 1][c] != ' ') {
+        /* Hit an enemy. */
+        G_STATE = LOST;
+        return;
+      }
+    }
+    --tank->row;
+  } else if (tank->dir == DOWN) {
+    if (tank->row == SCREEN_BOTTOM - TANK_H + 1) {
+      return;
+    }
+    int c = tank->col;
+    for (; c < tank->col + TANK_W; ++c) {
+      if (SCREEN[tank->row + TANK_H][c] != ' ') {
+        G_STATE = LOST;
+        return;
+      }
+    }
+    ++tank->row;
+  } else if (tank->dir == LEFT) {
+    if (tank->col == SCREEN_LEFT) {
+      return;
+    }
+    int r = tank->row;
+    for (; r < tank->row + TANK_H; ++r) {
+      if (SCREEN[r][tank->col - 1] != ' ') {
+        G_STATE = LOST;
+        return;
+      }
+    }
+    --tank->col;
+  } else if (tank->dir == RIGHT) {
+    if (tank->col == SCREEN_RIGHT - TANK_W + 1) {
+      return;
+    }
+    int r = tank->row;
+    for (; r < tank->row + TANK_H; ++r) {
+      if (SCREEN[r][tank->col + TANK_W] != ' ') {
+        G_STATE = LOST;
+        return;
+      }
+    }
+    ++tank->col;
+  }
+}
+
+/* Fills the tank frame with dummy chars for collision detection. */
+void fill_tank(struct Tank *tank) {
+  int i = tank->row;
+  for (; i < tank->row + TANK_H; ++i) {
+    int j = tank->col;
+    for (; j < tank->col + TANK_W; ++j) {
+      SCREEN[i][j] = TANK_CHAR;
+    }
+  }
+}
+
 /* Runs the main game routine. */
 void run_game() {
+  /* Create enemies. */
   struct Enemy enemies[ENEMY_SIZE];
   int i = 0;
   for (; i < ENEMY_SIZE; ++i) {
@@ -340,27 +474,80 @@ void run_game() {
     enemies[i].row = SCREEN_TOP + rand() % 10;
   }
 
+  /* Create the player tank. */
+  struct Tank tank = {
+      .ot = TANK,
+      .dir = UP,
+      .row = SCREEN_BOTTOM - TANK_H + 1,
+      .col = SCREEN_RIGHT - TANK_W,
+      .move = 0,
+  };
+
   while (1) {
     switch (get_input_char()) {
       case 'q':
         G_STATE = ENDED;
         return;
+      case 'k':
+        /* TODO: Create the bullet. */
+        break;
+      case 'w':
+        if (tank.dir == UP) {
+          tank.move = 1;
+        } else {
+          tank.dir = UP;
+        }
+        break;
+      case 's':
+        if (tank.dir == DOWN) {
+          tank.move = 1;
+        } else {
+          tank.dir = DOWN;
+        }
+        break;
+      case 'a':
+        if (tank.dir == LEFT) {
+          tank.move = 1;
+        } else {
+          tank.dir = LEFT;
+        }
+        break;
+      case 'd':
+        if (tank.dir == RIGHT) {
+          tank.move = 1;
+        } else {
+          tank.dir = RIGHT;
+        }
+        break;
       default:
+        tank.move = 0;
         break;
     }
 
     /* Logic to process objects. */
+    /* Bullets. */
+
+    tank_move(&tank);
+
     for (i = 0; i < ENEMY_SIZE; ++i) {
       enemy_act(&enemies[i]);
     }
 
+    if (G_STATE != PLAYING) {
+      return;
+    }
+
     /* Draw all objects. */
     screen_fill_def();
+    draw_object(&tank);
     for (i = 0; i < ENEMY_SIZE; ++i) {
       draw_object(&enemies[i]);
     }
 
     render();
+
+    /* Fill in dummy values for detecting object collision. */
+    fill_tank(&tank);
     frame_pause();
   }
 }
